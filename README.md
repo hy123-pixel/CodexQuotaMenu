@@ -4,6 +4,16 @@
 
 ![CodexQuotaMenu icon](Assets/CodexQuotaMenuIcon-1024.png)
 
+## 截图
+
+菜单栏会直接显示 5 小时和周额度的剩余百分比：
+
+![菜单栏额度状态](Assets/README-menu-bar.png)
+
+点击菜单栏图标后，可以查看详细额度、重置时间、缓存状态和刷新设置：
+
+![CodexQuotaMenu 用量面板](Assets/README-quota-panel.png)
+
 ## 功能
 
 - 显示 5 小时额度、周额度、已使用百分比、剩余百分比和预计重置时间。
