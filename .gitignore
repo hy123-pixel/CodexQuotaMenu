@@ -1,0 +1,28 @@
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# macOS
+.DS_Store
+
+# Build products and diagnostics
+CodexQuotaMenu.app/
+*.dSYM/
+*.ipa
+*.xcarchive/
+*.zip
+*.log
+
+# Local editor and temporary files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp

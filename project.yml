@@ -1,0 +1,77 @@
+name: CodexQuotaMenu
+
+options:
+  bundleIdPrefix: com.dt
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+  groupSortPosition: bottom
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    SWIFT_VERSION: "5.9"
+
+targets:
+  CodexQuotaCore:
+    type: framework.static
+    platform: macOS
+    sources:
+      - path: Sources/CodexQuotaCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dt.CodexQuotaCore
+        PRODUCT_NAME: CodexQuotaCore
+        SKIP_INSTALL: YES
+
+  CodexQuotaMenu:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/CodexQuotaMenu
+      - path: Assets/CodexQuotaMenu.xcassets
+        buildPhase: resources
+      - path: Assets/CodexQuotaMenuIcon.icns
+        buildPhase: resources
+    dependencies:
+      - target: CodexQuotaCore
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dt.codex-quotamenu
+        PRODUCT_NAME: CodexQuotaMenu
+        INFOPLIST_FILE: Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: YES
+
+  CodexQuotaCoreTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/CodexQuotaCoreTests
+    dependencies:
+      - target: CodexQuotaCore
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dt.codex-quotamenu.tests
+        PRODUCT_NAME: CodexQuotaCoreTests
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+schemes:
+  CodexQuotaMenu:
+    build:
+      targets:
+        CodexQuotaMenu: all
+        CodexQuotaCoreTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - CodexQuotaCoreTests
