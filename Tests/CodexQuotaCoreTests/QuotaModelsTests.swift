@@ -59,4 +59,33 @@ final class QuotaModelsTests: XCTestCase {
         XCTAssertEqual(merged.planType, "plus")
         XCTAssertEqual(merged.rateLimitReachedType, "rate_limit_reached")
     }
+
+    func testCodexVersionNormalizesTagsAndComparesSemverParts() {
+        XCTAssertEqual(CodexVersion("v0.1.1"), CodexVersion("0.1.1"))
+        XCTAssertTrue(CodexVersion("v0.1.2")! > CodexVersion("v0.1.1")!)
+        XCTAssertTrue(CodexVersion("1.0")! > CodexVersion("0.9.9")!)
+        XCTAssertNil(CodexVersion("latest"))
+    }
+
+    func testReleaseSelectsTheMacOSUniversalZipAsset() throws {
+        let json = #"""
+        {
+          "tag_name": "v0.1.2",
+          "name": "CodexQuotaMenu v0.1.2",
+          "html_url": "https://github.com/hy123-pixel/CodexQuotaMenu/releases/tag/v0.1.2",
+          "published_at": "2026-10-19T10:00:00Z",
+          "assets": [
+            { "name": "SHA256SUMS.txt", "browser_download_url": "https://example.com/SHA256SUMS.txt", "digest": null },
+            { "name": "CodexQuotaMenu-macOS-universal-v0.1.2.zip", "browser_download_url": "https://example.com/CodexQuotaMenu.zip", "digest": "sha256:abc" }
+          ]
+        }
+        """#.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let release = try decoder.decode(CodexRelease.self, from: json)
+
+        XCTAssertEqual(release.version, CodexVersion("0.1.2"))
+        XCTAssertEqual(release.macOSUniversalAsset?.name, "CodexQuotaMenu-macOS-universal-v0.1.2.zip")
+    }
 }

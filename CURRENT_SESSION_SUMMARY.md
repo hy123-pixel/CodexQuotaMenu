@@ -23,6 +23,7 @@
 7. 增强不同 ChatGPT/Codex CLI 安装路径的兼容性。
 8. 将整合后的项目移动到 `/Users/dt/Desktop/Sync/Product/` 目录下。
 9. 将本次会话内容整理成当前 Markdown 文档。
+10. 增加 GitHub Release 自动检查、用户确认下载和自动更新当前 App。
 
 ## 2. 最终功能
 
@@ -69,7 +70,15 @@ codex app-server --stdio
 
 用户也可以手动选择 30 秒、1 分钟、3 分钟、5 分钟或 10 分钟。刷新选项会持久化到本机偏好设置。
 
-### 2.4 缓存与启动
+### 2.4 应用更新
+
+- 启动时检查一次 GitHub `releases/latest`，之后每 12 小时自动检查。
+- 只提示比当前版本更高、且包含 macOS 通用 ZIP 的 Release。
+- 用户点击“下载并更新”后才会下载和替换当前 App。
+- 下载后校验 GitHub Release 提供的 SHA-256 摘要，成功后自动重启应用。
+- 更新检查不会上传额度、认证信息或设备信息。
+
+### 2.5 缓存与启动
 
 - 最近一次成功读取的快照保存到 `UserDefaults`。
 - 实时读取失败时继续显示缓存，并明确标记为缓存数据。
@@ -97,10 +106,12 @@ CodexQuotaMenu/
 ├── Sources/
 │   ├── CodexQuotaCore/
 │   │   ├── CodexAppServerClient.swift
-│   │   └── QuotaModels.swift
+│   │   ├── QuotaModels.swift
+│   │   └── UpdateModels.swift
 │   └── CodexQuotaMenu/
 │       ├── CodexQuotaMenuApp.swift
-│       └── QuotaStore.swift
+│       ├── QuotaStore.swift
+│       └── UpdateStore.swift
 ├── Tests/
 │   └── CodexQuotaCoreTests/
 │       └── QuotaModelsTests.swift
@@ -117,8 +128,12 @@ CodexQuotaMenu/
 - `Sources/CodexQuotaCore/QuotaModels.swift`
   - 定义 5 小时和周额度模型。
   - 处理百分比边界保护、重置时间和稀疏更新合并。
+- `Sources/CodexQuotaCore/UpdateModels.swift`
+  - 解析 GitHub Release、版本号和 macOS 通用安装包资产。
 - `Sources/CodexQuotaMenu/QuotaStore.swift`
   - 管理刷新任务、缓存、自动刷新开关、刷新频率和登录启动。
+- `Sources/CodexQuotaMenu/UpdateStore.swift`
+  - 定期检查 GitHub Release，校验下载包并执行用户确认的 App 更新。
 - `Sources/CodexQuotaMenu/CodexQuotaMenuApp.swift`
   - 原生 AppKit `NSStatusItem` 菜单栏应用和 SwiftUI 额度面板。
   - 包含额度卡片、状态栏标识、设置和错误状态。
@@ -193,7 +208,7 @@ open /Users/dt/Desktop/Sync/Product/CodexQuotaMenu/CodexQuotaMenu.xcodeproj
 
 ### 6.2 已完成验证
 
-- Swift Package 测试：3 个测试全部通过。
+- Swift Package 测试：5 个测试全部通过。
 - 覆盖额度 JSON 解码、窗口映射、百分比边界保护、稀疏额度更新合并。
 - Xcode 工程可以识别以下 targets：
   - `CodexQuotaCore`
@@ -278,6 +293,7 @@ open /Users/dt/Desktop/Sync/Product/CodexQuotaMenu/CodexQuotaMenu.xcodeproj
 - 完成图标和视觉素材。
 - 完成智能刷新和可选刷新间隔。
 - 完成缓存、手动刷新和登录启动。
+- 完成 GitHub Release 自动检查、用户确认下载、SHA-256 校验和自动更新重启。
 - 修复新版 ChatGPT CLI 路径导致的实时读取失败。
 - 增强 ChatGPT/Codex CLI 多路径兼容性。
 - 整理为标准 Xcode 工程目录。

@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		356B4ABB50F7C27AF8F95D4D /* QuotaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8CE6C14863597AE0595C44 /* QuotaStore.swift */; };
+		3A6A2B77E0B6E4A1B7F7A2C1 /* UpdateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7C2B11E5F9D3A6C8B0D2E4 /* UpdateStore.swift */; };
 		5F4B0C94A302094E66123A92 /* CodexQuotaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 184DA7531261767086B98924 /* CodexQuotaCore.framework */; };
 		6D1286CE88C491FBEAE97778 /* CodexQuotaMenuIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 08550FBE25E628C24B7FB3AE /* CodexQuotaMenuIcon.icns */; };
 		805E5E84E1DE7605B19C5228 /* CodexAppServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 854FF6AEBD6BC5EA6778271E /* CodexAppServerClient.swift */; };
 		88AB3A33A78DC95B8FD2C281 /* QuotaModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64126C85997FC23E06A9377 /* QuotaModelsTests.swift */; };
 		916B50957888FC288CAF9A66 /* CodexQuotaMenu.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C21E7839804997D7F6AFA40 /* CodexQuotaMenu.xcassets */; };
 		C85140DEF9B9165FD646EE6C /* QuotaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A11DE8D35CF93641F6BD7B /* QuotaModels.swift */; };
+		D8F4A2C6B1E9D7F3A5C8E0B2 /* UpdateModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2D4F6A8C1E3B5D9F0A2C4E /* UpdateModels.swift */; };
 		E1177D3CADA6EE404C4F3805 /* CodexQuotaMenuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB65797892951F01BA923FD8 /* CodexQuotaMenuApp.swift */; };
 		F2DD249BE4436BCB8D90F4DC /* CodexQuotaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 184DA7531261767086B98924 /* CodexQuotaCore.framework */; };
 /* End PBXBuildFile section */
@@ -39,6 +41,7 @@
 		08550FBE25E628C24B7FB3AE /* CodexQuotaMenuIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = CodexQuotaMenuIcon.icns; sourceTree = "<group>"; };
 		184DA7531261767086B98924 /* CodexQuotaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CodexQuotaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41A11DE8D35CF93641F6BD7B /* QuotaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotaModels.swift; sourceTree = "<group>"; };
+		4A7C2B11E5F9D3A6C8B0D2E4 /* UpdateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateStore.swift; sourceTree = "<group>"; };
 		4B8784219639A46815E0E4F6 /* CodexQuotaMenu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodexQuotaMenu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C21E7839804997D7F6AFA40 /* CodexQuotaMenu.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = CodexQuotaMenu.xcassets; sourceTree = "<group>"; };
 		6F5EFCFECCF8376316511346 /* CodexQuotaCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodexQuotaCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,6 +49,7 @@
 		8D8CE6C14863597AE0595C44 /* QuotaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotaStore.swift; sourceTree = "<group>"; };
 		E64126C85997FC23E06A9377 /* QuotaModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotaModelsTests.swift; sourceTree = "<group>"; };
 		FB65797892951F01BA923FD8 /* CodexQuotaMenuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexQuotaMenuApp.swift; sourceTree = "<group>"; };
+		7B2D4F6A8C1E3B5D9F0A2C4E /* UpdateModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateModels.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,7 @@
 			children = (
 				FB65797892951F01BA923FD8 /* CodexQuotaMenuApp.swift */,
 				8D8CE6C14863597AE0595C44 /* QuotaStore.swift */,
+				4A7C2B11E5F9D3A6C8B0D2E4 /* UpdateStore.swift */,
 			);
 			path = CodexQuotaMenu;
 			sourceTree = "<group>";
@@ -117,6 +122,7 @@
 			children = (
 				854FF6AEBD6BC5EA6778271E /* CodexAppServerClient.swift */,
 				41A11DE8D35CF93641F6BD7B /* QuotaModels.swift */,
+				7B2D4F6A8C1E3B5D9F0A2C4E /* UpdateModels.swift */,
 			);
 			path = CodexQuotaCore;
 			sourceTree = "<group>";
@@ -258,6 +264,7 @@
 			files = (
 				E1177D3CADA6EE404C4F3805 /* CodexQuotaMenuApp.swift in Sources */,
 				356B4ABB50F7C27AF8F95D4D /* QuotaStore.swift in Sources */,
+				3A6A2B77E0B6E4A1B7F7A2C1 /* UpdateStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +274,7 @@
 			files = (
 				805E5E84E1DE7605B19C5228 /* CodexAppServerClient.swift in Sources */,
 				C85140DEF9B9165FD646EE6C /* QuotaModels.swift in Sources */,
+				D8F4A2C6B1E9D7F3A5C8E0B2 /* UpdateModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

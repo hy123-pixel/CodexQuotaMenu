@@ -17,6 +17,7 @@ struct CodexQuotaMenuApp: App {
 @MainActor
 private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
     private var model: QuotaStore!
+    private var updateStore: UpdateStore!
     private var statusItem: NSStatusItem!
     private let popover = NSPopover()
     private var modelObserver: AnyCancellable?
@@ -26,6 +27,8 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.setActivationPolicy(.accessory)
 
         model = QuotaStore()
+        updateStore = UpdateStore()
+        updateStore.startAutomaticChecks()
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         configureStatusButton()
         configurePopover()
@@ -43,6 +46,7 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         model?.stop()
+        updateStore?.stopAutomaticChecks()
         if let outsideClickMonitor {
             NSEvent.removeMonitor(outsideClickMonitor)
         }
@@ -72,9 +76,9 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
 
     private func configurePopover() {
         popover.behavior = .transient
-        popover.contentSize = NSSize(width: 376, height: 520)
+        popover.contentSize = NSSize(width: 376, height: 590)
         popover.contentViewController = NSHostingController(
-            rootView: QuotaPopover(model: model)
+            rootView: QuotaPopover(model: model, updateStore: updateStore)
         )
     }
 
@@ -148,6 +152,7 @@ struct CodexStatusMark: View {
 
 struct QuotaPopover: View {
     @ObservedObject var model: QuotaStore
+    @ObservedObject var updateStore: UpdateStore
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
@@ -327,6 +332,34 @@ struct QuotaPopover: View {
                         .font(.caption2)
                         .foregroundStyle(.orange)
                 }
+
+                Divider()
+
+                HStack(spacing: 8) {
+                    Label("应用更新", systemImage: updateStore.hasUpdate ? "arrow.down.circle.fill" : "arrow.triangle.2.circlepath")
+                        .foregroundStyle(updateStore.hasUpdate ? Color.accentColor : .secondary)
+
+                    Spacer()
+
+                    if updateStore.isBusy {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Button(updateStore.actionTitle) {
+                            if updateStore.hasUpdate {
+                                updateStore.downloadAndInstall()
+                            } else {
+                                updateStore.checkNow()
+                            }
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+
+                Text(updateStore.statusText)
+                    .font(.caption2)
+                    .foregroundStyle(updateStore.hasUpdate ? Color.accentColor : .secondary)
+                    .lineLimit(2)
             }
 
             HStack {
