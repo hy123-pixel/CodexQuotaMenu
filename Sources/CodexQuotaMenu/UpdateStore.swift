@@ -292,9 +292,22 @@ final class UpdateStore: ObservableObject {
             throw UpdateError.installLocationUnsupported
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            NSWorkspace.shared.open(currentAppURL)
-            NSApp.terminate(nil)
-        }
+        relaunchAfterTermination(at: currentAppURL)
+    }
+
+    private func relaunchAfterTermination(at appURL: URL) {
+        let relauncher = Process()
+        relauncher.executableURL = URL(fileURLWithPath: "/bin/sh")
+        relauncher.arguments = [
+            "-c",
+            "sleep 1; exec /usr/bin/open -- \"$1\"",
+            "CodexQuotaMenuUpdater",
+            appURL.path
+        ]
+        relauncher.standardInput = FileHandle.nullDevice
+        relauncher.standardOutput = FileHandle.nullDevice
+        relauncher.standardError = FileHandle.nullDevice
+        try? relauncher.run()
+        NSApp.terminate(nil)
     }
 }
