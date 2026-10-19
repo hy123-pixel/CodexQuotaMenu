@@ -20,6 +20,7 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private let popover = NSPopover()
     private var modelObserver: AnyCancellable?
+    private var outsideClickMonitor: Any?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApplication.shared.setActivationPolicy(.accessory)
@@ -28,6 +29,7 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         configureStatusButton()
         configurePopover()
+        installOutsideClickMonitor()
 
         // QuotaStore publishes before its values change. Dispatching the
         // button update keeps the native status item in sync with the new
@@ -41,6 +43,9 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         model?.stop()
+        if let outsideClickMonitor {
+            NSEvent.removeMonitor(outsideClickMonitor)
+        }
     }
 
     private func configureStatusButton() {
@@ -73,6 +78,17 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
+    private func installOutsideClickMonitor() {
+        outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown]
+        ) { [weak self] _ in
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.popover.isShown else { return }
+                self.popover.performClose(nil)
+            }
+        }
+    }
+
     private func updateStatusButton() {
         guard let button = statusItem?.button else { return }
 
@@ -92,6 +108,14 @@ private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
             popover.performClose(sender)
         } else {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.popover.isShown else { return }
+                // An accessory app does not become active just because its
+                // popover is shown. Make the popover the active/key surface so
+                // SwiftUI controls render and behave as the current selection.
+                NSApp.activate(ignoringOtherApps: true)
+                self.popover.contentViewController?.view.window?.makeKey()
+            }
         }
     }
 }
@@ -131,6 +155,7 @@ struct QuotaPopover: View {
         }
         .frame(width: 340)
         .padding(18)
+        .background(.background)
     }
 
     @ViewBuilder
@@ -244,19 +269,33 @@ struct QuotaPopover: View {
 
                     Spacer()
 
-                    Picker(
-                        "刷新频率",
-                        selection: Binding(
-                            get: { model.refreshInterval },
-                            set: { model.setRefreshInterval($0) }
-                        )
-                    ) {
+                    Menu {
                         ForEach(QuotaRefreshInterval.allCases) { interval in
-                            Text(interval.title).tag(interval)
+                            Button {
+                                model.setRefreshInterval(interval)
+                            } label: {
+                                if interval == model.refreshInterval {
+                                    Label(interval.title, systemImage: "checkmark")
+                                } else {
+                                    Text(interval.title)
+                                }
+                            }
                         }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(model.refreshInterval.title)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.caption2.weight(.semibold))
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Color.secondary.opacity(0.16),
+                            in: RoundedRectangle(cornerRadius: 7)
+                        )
                     }
-                    .labelsHidden()
-                    .pickerStyle(.menu)
+                    .menuStyle(.borderlessButton)
+                    .fixedSize()
                     .disabled(!model.autoRefreshEnabled)
                 }
 

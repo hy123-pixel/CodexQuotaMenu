@@ -1,6 +1,6 @@
 # CodexQuotaMenu 当前会话整理
 
-生成时间：2026-09-28 11:00（Asia/Shanghai）
+生成时间：2026-10-19 18:20（Asia/Shanghai）
 
 这份文档整理本次会话中关于 Codex 用量菜单栏工具的需求、实现、问题修复、验证结果和当前文件位置。文档不包含认证 token、API Key 或其他敏感凭证，也不包含模型内部推理过程。
 
@@ -120,7 +120,7 @@ CodexQuotaMenu/
 - `Sources/CodexQuotaMenu/QuotaStore.swift`
   - 管理刷新任务、缓存、自动刷新开关、刷新频率和登录启动。
 - `Sources/CodexQuotaMenu/CodexQuotaMenuApp.swift`
-  - SwiftUI `MenuBarExtra` 菜单栏应用。
+  - 原生 AppKit `NSStatusItem` 菜单栏应用和 SwiftUI 额度面板。
   - 包含额度卡片、状态栏标识、设置和错误状态。
 - `Assets/`
   - 包含主图标、状态栏资源和 `.icns` 素材。
@@ -166,7 +166,7 @@ CodexQuotaMenu/
 ## 5. 视觉与应用形态
 
 - 原生 SwiftUI macOS 菜单栏应用。
-- 使用 `MenuBarExtra`，不显示普通 Dock 窗口。
+- 使用原生 `NSStatusItem`，不显示普通 Dock 窗口。
 - 使用自定义深蓝仪表盘风格图标。
 - 状态栏使用专属 gauge mark。
 - 应用图标由 PNG 素材生成 `.icns`。

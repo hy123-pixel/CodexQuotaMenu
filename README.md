@@ -2,6 +2,11 @@
 
 一个原生 macOS 菜单栏工具，用于读取并显示 Codex 的 5 小时额度和周额度。
 
+[![CI](https://github.com/hy123-pixel/CodexQuotaMenu/actions/workflows/ci.yml/badge.svg)](https://github.com/hy123-pixel/CodexQuotaMenu/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/hy123-pixel/CodexQuotaMenu)](https://github.com/hy123-pixel/CodexQuotaMenu/releases/latest)
+
+[下载最新版本](https://github.com/hy123-pixel/CodexQuotaMenu/releases/latest) · [查看源代码](https://github.com/hy123-pixel/CodexQuotaMenu)
+
 ![CodexQuotaMenu icon](Assets/CodexQuotaMenuIcon-1024.png)
 
 ## 截图
@@ -22,8 +27,17 @@
 - 支持 30 秒、1 分钟、3 分钟、5 分钟和 10 分钟刷新间隔。
 - 最近一次成功结果本地缓存；读取失败时明确标记为缓存数据。
 - 支持手动刷新和登录时自动启动。
-- 使用原生 `NSStatusItem` 状态按钮，让图标和额度文本作为整体水平居中。
+- 使用原生 `NSStatusItem` 状态按钮，让图标和额度文本作为整体水平居中；弹窗打开后会成为当前激活面板，控件和当前刷新选项保持明确的选中状态。
 - 提供 macOS 应用图标、状态栏 gauge mark 和统一的弹窗视觉素材。
+
+## 安装
+
+1. 从 [Releases](https://github.com/hy123-pixel/CodexQuotaMenu/releases/latest) 下载 `CodexQuotaMenu-macOS-universal-*.zip`。
+2. 解压后将 `CodexQuotaMenu.app` 移动到 `/Applications`。
+3. 首次启动如果 macOS 显示安全提示，请在 Finder 中右键 App，选择“打开”。
+4. 打开菜单栏中的“登录时自动启动”开关即可。
+
+发布包是 arm64 + x86_64 通用 App，使用本机 ad-hoc 签名，当前未经过 Apple notarization。每个 Release 同时提供 `SHA256SUMS.txt`，可用于校验下载文件。
 
 ## 数据与隐私
 
@@ -55,6 +69,8 @@ initialize → initialized → account/rateLimits/read
 ### 使用 Xcode
 
 打开 `CodexQuotaMenu.xcodeproj`，选择 `CodexQuotaMenu` scheme 后运行或构建。
+
+这是仓库的主工程文件；`Package.swift` 主要用于 Swift Package 测试和命令行构建入口。
 
 ### 使用命令行
 
@@ -119,6 +135,7 @@ swift test
 - [当前会话整理](CURRENT_SESSION_SUMMARY.md)
 - [变更记录](CHANGELOG.md)
 - [贡献说明](CONTRIBUTING.md)
+- [安全说明](SECURITY.md)
 
 ## 许可证
 
