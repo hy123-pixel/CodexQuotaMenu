@@ -1,33 +1,98 @@
 import AppKit
+import Combine
 import SwiftUI
 import CodexQuotaCore
 
 @main
-@MainActor
 struct CodexQuotaMenuApp: App {
-    @StateObject private var model = QuotaStore()
+    @NSApplicationDelegateAdaptor(CodexQuotaMenuAppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra {
-            QuotaPopover(model: model)
-        } label: {
-            MenuBarStatusLabel(model: model)
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.window)
     }
 }
 
-struct MenuBarStatusLabel: View {
-    @ObservedObject var model: QuotaStore
+@MainActor
+private final class CodexQuotaMenuAppDelegate: NSObject, NSApplicationDelegate {
+    private var model: QuotaStore!
+    private var statusItem: NSStatusItem!
+    private let popover = NSPopover()
+    private var modelObserver: AnyCancellable?
 
-    var body: some View {
-        HStack(spacing: 5) {
-            CodexStatusMark(tint: model.statusColor)
-            Text(model.menuBarText)
-                .monospacedDigit()
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApplication.shared.setActivationPolicy(.accessory)
+
+        model = QuotaStore()
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        configureStatusButton()
+        configurePopover()
+
+        // QuotaStore publishes before its values change. Dispatching the
+        // button update keeps the native status item in sync with the new
+        // snapshot while preserving AppKit's native centering behavior.
+        modelObserver = model.objectWillChange.sink { [weak self] _ in
+            DispatchQueue.main.async { [weak self] in
+                self?.updateStatusButton()
+            }
         }
-        .accessibilityLabel("Codex 用量：\(model.menuBarText)")
-        .help("Codex 用量：\(model.menuBarText)")
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        model?.stop()
+    }
+
+    private func configureStatusButton() {
+        guard let button = statusItem.button else { return }
+
+        let image = NSImage(
+            systemSymbolName: "gauge",
+            accessibilityDescription: "Codex 用量"
+        )
+        image?.isTemplate = true
+        image?.size = NSSize(width: 16, height: 16)
+
+        button.image = image
+        button.imagePosition = .imageLeading
+        button.imageScaling = .scaleProportionallyDown
+        button.alignment = .center
+        button.font = NSFont.menuBarFont(ofSize: 0)
+        button.target = self
+        button.action = #selector(togglePopover(_:))
+        button.toolTip = "Codex 用量"
+
+        updateStatusButton()
+    }
+
+    private func configurePopover() {
+        popover.behavior = .transient
+        popover.contentSize = NSSize(width: 376, height: 520)
+        popover.contentViewController = NSHostingController(
+            rootView: QuotaPopover(model: model)
+        )
+    }
+
+    private func updateStatusButton() {
+        guard let button = statusItem?.button else { return }
+
+        button.attributedTitle = NSAttributedString(
+            string: model?.menuBarText ?? "Codex —",
+            attributes: [
+                .font: NSFont.menuBarFont(ofSize: 0),
+                .baselineOffset: -0.75
+            ]
+        )
+    }
+
+    @objc private func togglePopover(_ sender: Any?) {
+        guard let button = statusItem.button else { return }
+
+        if popover.isShown {
+            popover.performClose(sender)
+        } else {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        }
     }
 }
 

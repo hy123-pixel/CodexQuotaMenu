@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- 将菜单栏状态项调整为原生 `NSStatusItem`，参考 MemoryBar 的整体布局，让图标和额度文本保持水平居中。
+- 保留 SwiftUI 额度面板和原有刷新逻辑。
+
 ## 0.1.0 - 2026-09-28
 
 - 创建 macOS Codex 用量菜单栏工具。
