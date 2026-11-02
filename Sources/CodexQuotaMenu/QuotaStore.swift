@@ -77,7 +77,18 @@ final class QuotaStore: ObservableObject {
         guard let snapshot else {
             return isLoading ? "Codex …" : "Codex —"
         }
-        return "5h \(snapshot.fiveHour.remainingPercent)% · 周 \(snapshot.weekly.remainingPercent)%"
+
+        var values: [String] = []
+        if let fiveHour = snapshot.fiveHour {
+            values.append("5h \(fiveHour.remainingPercent)%")
+        }
+        if let weekly = snapshot.weekly {
+            values.append("周 \(weekly.remainingPercent)%")
+        }
+        if let otherWindow = snapshot.otherWindow {
+            values.append("\(otherWindow.shortDisplayTitle) \(otherWindow.remainingPercent)%")
+        }
+        return values.isEmpty ? "Codex —" : values.joined(separator: " · ")
     }
 
     func refresh() async {

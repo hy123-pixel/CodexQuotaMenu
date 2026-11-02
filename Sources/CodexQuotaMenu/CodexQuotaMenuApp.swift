@@ -169,18 +169,35 @@ struct QuotaPopover: View {
             header
 
             if let snapshot = model.snapshot {
-                UsageCard(
-                    title: "5 小时额度",
-                    window: snapshot.fiveHour,
-                    accent: .indigo,
-                    now: now
-                )
-                UsageCard(
-                    title: "周额度",
-                    window: snapshot.weekly,
-                    accent: .teal,
-                    now: now
-                )
+                if let fiveHour = snapshot.fiveHour {
+                    UsageCard(
+                        title: fiveHour.displayTitle,
+                        window: fiveHour,
+                        accent: .indigo,
+                        now: now
+                    )
+                }
+                if let weekly = snapshot.weekly {
+                    UsageCard(
+                        title: weekly.displayTitle,
+                        window: weekly,
+                        accent: .teal,
+                        now: now
+                    )
+                }
+                if let otherWindow = snapshot.otherWindow {
+                    UsageCard(
+                        title: otherWindow.displayTitle,
+                        window: otherWindow,
+                        accent: .indigo,
+                        now: now
+                    )
+                }
+                if snapshot.fiveHour == nil,
+                   snapshot.weekly == nil,
+                   snapshot.otherWindow == nil {
+                    EmptyState(model: model)
+                }
             } else if model.isLoading {
                 HStack(spacing: 10) {
                     ProgressView()
@@ -497,8 +514,8 @@ private extension QuotaStore {
             return .orange
         }
         let highestUsage = max(
-            snapshot?.fiveHour.clampedUsedPercent ?? 0,
-            snapshot?.weekly.clampedUsedPercent ?? 0
+            snapshot?.fiveHour?.clampedUsedPercent ?? 0,
+            snapshot?.weekly?.clampedUsedPercent ?? 0
         )
         switch highestUsage {
         case 90...100:

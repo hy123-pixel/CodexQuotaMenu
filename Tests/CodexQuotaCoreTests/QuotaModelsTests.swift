@@ -19,10 +19,10 @@ final class QuotaModelsTests: XCTestCase {
         let fetchedAt = Date(timeIntervalSince1970: 100)
         let snapshot = try CodexQuotaSnapshot(response: response, fetchedAt: fetchedAt)
 
-        XCTAssertEqual(snapshot.fiveHour.usedPercent, 44)
-        XCTAssertEqual(snapshot.fiveHour.remainingPercent, 56)
-        XCTAssertEqual(snapshot.weekly.usedPercent, 82)
-        XCTAssertEqual(snapshot.weekly.remainingPercent, 18)
+        XCTAssertEqual(snapshot.fiveHour?.usedPercent, 44)
+        XCTAssertEqual(snapshot.fiveHour?.remainingPercent, 56)
+        XCTAssertEqual(snapshot.weekly?.usedPercent, 82)
+        XCTAssertEqual(snapshot.weekly?.remainingPercent, 18)
         XCTAssertEqual(snapshot.planType, "plus")
         XCTAssertEqual(snapshot.fetchedAt, fetchedAt)
     }
@@ -87,5 +87,22 @@ final class QuotaModelsTests: XCTestCase {
 
         XCTAssertEqual(release.version, CodexVersion("0.1.2"))
         XCTAssertEqual(release.macOSUniversalAsset?.name, "CodexQuotaMenu-macOS-universal-v0.1.2.zip")
+    }
+
+    func testFreePlanMonthlyWindowDoesNotRequireWeeklyQuota() throws {
+        let response = CodexRateLimitsResponse(
+            rateLimits: CodexRateLimitSnapshot(
+                primary: CodexRateLimitWindow(usedPercent: 87, windowDurationMins: 43200, resetsAt: 100),
+                secondary: nil,
+                planType: "free"
+            )
+        )
+
+        let snapshot = try CodexQuotaSnapshot(response: response)
+
+        XCTAssertNil(snapshot.fiveHour)
+        XCTAssertNil(snapshot.weekly)
+        XCTAssertEqual(snapshot.otherWindow?.displayTitle, "月额度")
+        XCTAssertEqual(snapshot.otherWindow?.remainingPercent, 13)
     }
 }

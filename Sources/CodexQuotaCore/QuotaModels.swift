@@ -3,6 +3,7 @@ import Foundation
 public enum CodexQuotaModelError: LocalizedError, Equatable, Sendable {
     case missingFiveHourWindow
     case missingWeeklyWindow
+    case missingRateLimitWindow
 
     public var errorDescription: String? {
         switch self {
@@ -10,6 +11,8 @@ public enum CodexQuotaModelError: LocalizedError, Equatable, Sendable {
             return "Codex 没有返回 5 小时额度窗口。"
         case .missingWeeklyWindow:
             return "Codex 没有返回周额度窗口。"
+        case .missingRateLimitWindow:
+            return "Codex 没有返回可用的额度窗口。"
         }
     }
 }
@@ -73,24 +76,60 @@ public struct CodexRateLimitWindow: Codable, Equatable, Sendable {
         guard let resetsAt else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(resetsAt))
     }
+
+    public var displayTitle: String {
+        switch windowDurationMins {
+        case 300:
+            return "5 小时额度"
+        case 10080:
+            return "周额度"
+        case 43200:
+            return "月额度"
+        case let minutes? where minutes % 10080 == 0:
+            return "(minutes / 10080) 周额度"
+        case let minutes? where minutes % 60 == 0:
+            return "(minutes / 60) 小时额度"
+        default:
+            return "当前额度"
+        }
+    }
+
+    public var shortDisplayTitle: String {
+        switch windowDurationMins {
+        case 300:
+            return "5h"
+        case 10080:
+            return "周"
+        case 43200:
+            return "月"
+        case let minutes? where minutes % 10080 == 0:
+            return "(minutes / 10080)周"
+        case let minutes? where minutes % 60 == 0:
+            return "(minutes / 60)h"
+        default:
+            return "额度"
+        }
+    }
 }
 
 public struct CodexQuotaSnapshot: Codable, Equatable, Sendable {
-    public let fiveHour: CodexRateLimitWindow
-    public let weekly: CodexRateLimitWindow
+    public let fiveHour: CodexRateLimitWindow?
+    public let weekly: CodexRateLimitWindow?
+    public let otherWindow: CodexRateLimitWindow?
     public let planType: String?
     public let fetchedAt: Date
 
     public init(response: CodexRateLimitsResponse, fetchedAt: Date = Date()) throws {
-        guard let fiveHour = response.rateLimits.primary else {
-            throw CodexQuotaModelError.missingFiveHourWindow
-        }
-        guard let weekly = response.rateLimits.secondary else {
-            throw CodexQuotaModelError.missingWeeklyWindow
+        let windows = [response.rateLimits.primary, response.rateLimits.secondary].compactMap { $0 }
+        guard !windows.isEmpty else {
+            throw CodexQuotaModelError.missingRateLimitWindow
         }
 
-        self.fiveHour = fiveHour
-        self.weekly = weekly
+        self.fiveHour = windows.first(where: { $0.windowDurationMins == 300 })
+        self.weekly = windows.first(where: { $0.windowDurationMins == 10080 })
+        self.otherWindow = windows.first(where: {
+            $0.windowDurationMins != 300 && $0.windowDurationMins != 10080
+        })
         self.planType = response.rateLimits.planType
         self.fetchedAt = fetchedAt
     }
