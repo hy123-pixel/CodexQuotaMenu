@@ -78,6 +78,14 @@ final class QuotaStore: ObservableObject {
             return isLoading ? "Codex …" : "Codex —"
         }
 
+        if snapshot.planType?.lowercased() == "free" {
+            let remainingWindow = snapshot.otherWindow ?? snapshot.fiveHour ?? snapshot.weekly
+            if let remainingWindow {
+                return "Free · \(remainingWindow.remainingPercent)%"
+            }
+            return "Free"
+        }
+
         var values: [String] = []
         if let fiveHour = snapshot.fiveHour {
             values.append("5h \(fiveHour.remainingPercent)%")
@@ -90,9 +98,6 @@ final class QuotaStore: ObservableObject {
         }
 
         let summary = values.joined(separator: " · ")
-        if snapshot.planType?.lowercased() == "free" {
-            return summary.isEmpty ? "Free" : "Free · \(summary)"
-        }
         return summary.isEmpty ? "Codex —" : summary
     }
 
