@@ -154,7 +154,7 @@ public final class CodexAppServerClient {
                 params: [
                     "clientInfo": [
                         "name": "codex-quota-menu",
-                        "version": "0.2.2"
+                        "version": "0.2.3"
                     ],
                     "capabilities": [
                         "experimentalApi": true

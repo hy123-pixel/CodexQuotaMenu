@@ -262,6 +262,9 @@ struct QuotaPopover: View {
 
     private var headerSubtitle: String {
         if model.isUsingCache {
+            if let planType = model.snapshot?.planType, !planType.isEmpty {
+                return "\(planType.capitalized) · 上次成功读取的缓存 · 仍会自动刷新"
+            }
             return "上次成功读取的缓存 · 仍会自动刷新"
         }
         if let planType = model.snapshot?.planType, !planType.isEmpty {

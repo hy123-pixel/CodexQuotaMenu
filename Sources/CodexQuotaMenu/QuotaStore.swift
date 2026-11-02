@@ -88,7 +88,12 @@ final class QuotaStore: ObservableObject {
         if let otherWindow = snapshot.otherWindow {
             values.append("\(otherWindow.shortDisplayTitle) \(otherWindow.remainingPercent)%")
         }
-        return values.isEmpty ? "Codex —" : values.joined(separator: " · ")
+
+        let summary = values.joined(separator: " · ")
+        if snapshot.planType?.lowercased() == "free" {
+            return summary.isEmpty ? "Free" : "Free · \(summary)"
+        }
+        return summary.isEmpty ? "Codex —" : summary
     }
 
     func refresh() async {
