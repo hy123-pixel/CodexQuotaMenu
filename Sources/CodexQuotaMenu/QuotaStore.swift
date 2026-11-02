@@ -98,6 +98,11 @@ final class QuotaStore: ObservableObject {
         }
 
         let summary = values.joined(separator: " · ")
+        if snapshot.fiveHour == nil,
+           let planType = snapshot.planType?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !planType.isEmpty {
+            return summary.isEmpty ? planType.capitalized : "\(planType.capitalized) · \(summary)"
+        }
         return summary.isEmpty ? "Codex —" : summary
     }
 

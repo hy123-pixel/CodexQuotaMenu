@@ -518,7 +518,7 @@ private extension QuotaStore {
         }
         let highestUsage = max(
             snapshot?.fiveHour?.clampedUsedPercent ?? 0,
-            snapshot?.weekly?.clampedUsedPercent ?? 0
+            snapshot?.weekly?.clampedUsedPercent ?? snapshot?.otherWindow?.clampedUsedPercent ?? 0
         )
         switch highestUsage {
         case 90...100:

@@ -105,4 +105,23 @@ final class QuotaModelsTests: XCTestCase {
         XCTAssertEqual(snapshot.otherWindow?.displayTitle, "月额度")
         XCTAssertEqual(snapshot.otherWindow?.remainingPercent, 13)
     }
+
+    func testPlusPlanWithOnlyWeeklyWindowRemainsValid() throws {
+        let response = CodexQuotaLimitsResponseForTest.plusWeeklyOnly
+        let snapshot = try CodexQuotaSnapshot(response: response)
+
+        XCTAssertNil(snapshot.fiveHour)
+        XCTAssertEqual(snapshot.weekly?.remainingPercent, 100)
+        XCTAssertEqual(snapshot.planType, "plus")
+    }
+}
+
+private enum CodexQuotaLimitsResponseForTest {
+    static let plusWeeklyOnly = CodexRateLimitsResponse(
+        rateLimits: CodexRateLimitSnapshot(
+            primary: CodexRateLimitWindow(usedPercent: 0, windowDurationMins: 10080, resetsAt: 100),
+            secondary: nil,
+            planType: "plus"
+        )
+    )
 }
